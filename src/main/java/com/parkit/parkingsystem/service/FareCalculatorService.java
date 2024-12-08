@@ -15,7 +15,7 @@ public class FareCalculatorService {
         long inHour = ticket.getInTime().getTime();
         long outHour = ticket.getOutTime().getTime();
 
-        TimeUnit time = TimeUnit.HOURS;
+        TimeUnit time = TimeUnit.MINUTES;
         long duration = time.convert(outHour - inHour, TimeUnit.MILLISECONDS);
 
     	double prixVehiculeEnCoursPourUneHeure;
@@ -32,12 +32,13 @@ public class FareCalculatorService {
 
             default: throw new IllegalArgumentException("Unkown Parking Type");
         }
-
-        if (duration == 0) { // le véhicule reste moins d'une heure
-        	ticket.setPrice(prixVehiculeEnCoursPourUneHeure * 0.75);
-
+        double prix;
+        if (duration <= 30) { // le véhicule reste moins de 30 minutes
+        	prix = (prixVehiculeEnCoursPourUneHeure * 0);
+        }else if (duration <= 45) { // le véhicule reste moins d'une heure
+        	prix = (prixVehiculeEnCoursPourUneHeure * 0.75);
         }else { // le véhicule reste plus d'une heure
-        	ticket.setPrice(duration * prixVehiculeEnCoursPourUneHeure);
+        	prix = ((duration / 60) * prixVehiculeEnCoursPourUneHeure);
         }
 
     }
