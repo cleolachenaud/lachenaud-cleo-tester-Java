@@ -7,13 +7,18 @@ import com.parkit.parkingsystem.model.Ticket;
 
 public class FareCalculatorService {
 
-    public void calculateFare(Ticket ticket){
+	public void calculateFare(Ticket ticket) {
+		calculateFare(ticket, false);
+	}
+
+    public void calculateFare(Ticket ticket, boolean discount){
         if( (ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime())) ){
             throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
         }
 
-        long inHour = ticket.getInTime().getTime();
+        long inHour  = ticket.getInTime().getTime();
         long outHour = ticket.getOutTime().getTime();
+
 
         TimeUnit time = TimeUnit.MINUTES;
         long duration = time.convert(outHour - inHour, TimeUnit.MILLISECONDS);
@@ -41,5 +46,11 @@ public class FareCalculatorService {
         	prix = ((duration / 60) * prixVehiculeEnCoursPourUneHeure);
         }
 
+        if (discount) { // le véhicule bénéficie de la réduction fidélité 5%
+        	prix = prix * 0.95;
+        }
+
+        ticket.setPrice(prix);
     }
+
 }
