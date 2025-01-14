@@ -16,12 +16,12 @@ public class FareCalculatorService {
             throw new IllegalArgumentException("Out time provided is incorrect:"+ticket.getOutTime().toString());
         }
 
-        long inHour  = ticket.getInTime().getTime();
-        long outHour = ticket.getOutTime().getTime();
+        long inTime  = TimeUnit.MILLISECONDS.toMinutes(ticket.getInTime().getTime());
+        long outTime = TimeUnit.MILLISECONDS.toMinutes(ticket.getOutTime().getTime());
 
 
-        TimeUnit time = TimeUnit.MINUTES;
-        long duration = time.convert(outHour - inHour, TimeUnit.MILLISECONDS);
+        long duration = outTime - inTime;
+
 
     	double prixVehiculeEnCoursPourUneHeure;
 
@@ -39,11 +39,9 @@ public class FareCalculatorService {
         }
         double prix;
         if (duration <= 30) { // le véhicule reste moins de 30 minutes
-        	prix = (prixVehiculeEnCoursPourUneHeure * 0);
-        }else if (duration <= 45) { // le véhicule reste moins d'une heure
-        	prix = (prixVehiculeEnCoursPourUneHeure * 0.75);
-        }else { // le véhicule reste plus d'une heure
-        	prix = ((duration / 60) * prixVehiculeEnCoursPourUneHeure);
+        	prix = 0 ;
+        }else { // le véhicule reste plus de 30 minutes
+        	prix = ((duration / 60.0) * prixVehiculeEnCoursPourUneHeure);
         }
 
         if (discount) { // le véhicule bénéficie de la réduction fidélité 5%
