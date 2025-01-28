@@ -25,7 +25,7 @@ public class FareCalculatorService {
 
     	double prixVehiculeEnCoursPourUneHeure;
 
-        switch (ticket.getParkingSpot().getParkingType()){
+    	switch (ticket.getParkingSpot().getParkingType()){
             case CAR: {
             	prixVehiculeEnCoursPourUneHeure = Fare.CAR_RATE_PER_HOUR;
                 break;

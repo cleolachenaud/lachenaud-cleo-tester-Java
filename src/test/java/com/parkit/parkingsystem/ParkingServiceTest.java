@@ -55,6 +55,9 @@ public class ParkingServiceTest {
             throw  new RuntimeException("Failed to set up test mock objects");
         }
     }
+  /**
+   * test la méthode d'entrée du véhicule
+   */
     @Test
     public void processIncomingVehicleTest() {
     //Mock
@@ -74,7 +77,9 @@ public class ParkingServiceTest {
         Assert.assertNull("la date de sortie doit être null", ticketCaptured.getOutTime());
     }
 
-
+/**
+ * test de la méthode de sortie du véhicule
+ */
     @Test
     public void processExitingVehicleTest(){
     	when(ticketDAO.updateTicket(ticketCaptor.capture())).thenReturn(true);
@@ -94,7 +99,9 @@ public class ParkingServiceTest {
 
     }
 
-
+/**
+ * mise a jour du ticket a faux la place de parking reste occupee
+ */
      @Test
      public void processExitingVehicleTestUnableUpdate () {
     	 when(ticketDAO.updateTicket(ticketCaptor.capture())).thenReturn(false);
@@ -102,10 +109,11 @@ public class ParkingServiceTest {
          parkingService.processExitingVehicle();
      	 verify(parkingSpotDAO, never()).updateParking(any(ParkingSpot.class));
      }
-
+/**
+ * parkingSpot doit être disponible et avec un ID a 1
+ */
      @Test
      public void getNextParkingNumberIfAvailableTest () {
-    	// parkingSpot doit être disponible et avec un ID a 1
     	when(inputReaderUtil.readSelection()).thenReturn(1); // mock de la saisie utilisateur du choix voiture (1) ou moto (2)
     	when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(1);
     	ParkingSpot parkingSpotObtenu = parkingService.getNextParkingNumberIfAvailable();
@@ -113,20 +121,22 @@ public class ParkingServiceTest {
     	Assert.assertEquals("la place de parking attendue est la numero 1", 1, parkingSpotObtenu.getId());
 
      }
-
+/**
+ * résultat aucun spot disponible (la méthode renvoie null)
+ */
      @Test
      public void getNextParkingNumberIfAvailableParkingNumberNotFoundTest () {
-    	 //résultat aucun spot disponible (la méthode renvoie null)
     	when(inputReaderUtil.readSelection()).thenReturn(1); // mock de la saisie utilisateur du choix voiture (1) ou moto (2)
      	when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(-1);
      	ParkingSpot parkingSpotObtenu = parkingService.getNextParkingNumberIfAvailable();
      	Assert.assertNull("aucun spot disponible", parkingSpotObtenu);
 
      }
-
+/**
+ * test de l'exception si l'utilisateur saisi autre chose que voiture ou moto
+ */
      @Test
      public void getNextParkingNumberIfAvailableParkingNumberWrongArgumentTest() {
-    	//TODO argument saisi par l'utilisateur inputReaderUtil est faux
      	when(inputReaderUtil.readSelection()).thenReturn(3); // mock de la saisie utilisateur le choix 3 est un choix qui n'existe pas
      	ParkingSpot parkingSpotObtenu = parkingService.getNextParkingNumberIfAvailable();
      	verify(parkingSpotDAO, never()).getNextAvailableSlot(any(ParkingType.class));
