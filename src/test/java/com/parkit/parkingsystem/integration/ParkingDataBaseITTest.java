@@ -2,8 +2,6 @@ package com.parkit.parkingsystem.integration;
 
 import static org.mockito.Mockito.when;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.Date;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -88,9 +86,8 @@ public class ParkingDataBaseITTest {
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		parkingService.processIncomingVehicle();
 		Ticket ticket = ticketDAO.getTicket("ABCDEF");
-		Date heureModifie = DateUtils.addHours(ticketDAO.getTicket("ABCDEF").getInTime(), -2);
-		miseAJourTime(heureModifie);
-		parkingService.processExitingVehicle();
+		Date outTime = DateUtils.addHours(ticketDAO.getTicket("ABCDEF").getInTime(), +2);
+		parkingService.processExitingVehicle(outTime);
 
 		ticket = ticketDAO.getTicket("ABCDEF");
 		Assert.assertTrue("l'heure de sortie doit être renseignée", ticket.getOutTime() != null);
@@ -109,33 +106,15 @@ public class ParkingDataBaseITTest {
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		for (int passage = 0; passage < 2; passage ++) {
 			parkingService.processIncomingVehicle();
-			Date heureModifie = DateUtils.addHours(ticketDAO.getTicket("ABCDEF").getInTime(), -2 + passage);
-			miseAJourTime(heureModifie);
-			parkingService.processExitingVehicle();
+			Date outTime = (Date) DateUtils.addHours(ticketDAO.getTicket("ABCDEF").getInTime(), +2 + passage);
+			parkingService.processExitingVehicle(outTime);
 		}
 		Ticket ticket = ticketDAO.getTicket("ABCDEF");
 		Assert.assertEquals("le numéro ID du ticket doit être égal à 2", 2, ticket.getId());
 		Assert.assertEquals("la plaque doit être ABCDEF", "ABCDEF", ticket.getVehicleRegNumber());
-		Assert.assertEquals("une réduction du prix doit être appliqué", (Fare.CAR_RATE_PER_HOUR * 0.95), ticket.getPrice());
+		Assert.assertEquals("une réduction du prix doit être appliqué", (Fare.CAR_RATE_PER_HOUR * 0.95 * 3), ticket.getPrice());
 
 
-	}
-
-	public void miseAJourTime (Date heureAModifier) {
-		Connection con = null;
-		PreparedStatement ps = null;
-		final String MISE_A_JOUR_IN_TIME = "update TICKET set IN_TIME = ? where VEHICLE_REG_NUMBER = 'ABCDEF' AND OUT_TIME is NULL;";
-		try{
-			ps = dataBaseTestConfig.getConnection().prepareStatement(MISE_A_JOUR_IN_TIME);
-			ps.setTimestamp(1, new java.sql.Timestamp(heureAModifier.getTime()));
-			ps.executeUpdate();
-
-		}catch (Exception ex) {
-			Assert.fail("aucune exception ne devrait être remontée" + ex.toString());
-		}finally{
-			dataBaseTestConfig.closePreparedStatement(ps);
-			dataBaseTestConfig.closeConnection(con);
-		}
 	}
 
 }

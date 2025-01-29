@@ -38,17 +38,13 @@ public class ParkingService {
 
                 Date inTime = new Date();
                 Ticket ticket = new Ticket();
-                //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-                //ticket.setId(ticketID);
+
                 ticket.setParkingSpot(parkingSpot);
                 ticket.setVehicleRegNumber(vehicleRegNumber);
                 ticket.setPrice(0);
                 ticket.setInTime(inTime);
                 ticket.setOutTime(null);
                 ticketDAO.saveTicket(ticket);
-                logger.info("Generated Ticket and saved in DB");
-                logger.info("Please park your vehicle in spot number:"+parkingSpot.getId());
-                logger.info("Recorded in-time for vehicle number:"+vehicleRegNumber+" is:"+inTime);
 
                 if(ticketDAO.getNbTicket(ticket)>1) {
                 	logger.info("Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%");
@@ -102,11 +98,10 @@ public class ParkingService {
         }
     }
 
-    public void processExitingVehicle() {
+    public void processExitingVehicle(Date outTime) {
         try{
             String vehicleRegNumber = getVehichleRegNumber();
             Ticket ticket = ticketDAO.getTicket(vehicleRegNumber);
-            Date outTime = new Date();
             ticket.setOutTime(outTime);
             boolean discount = ticketDAO.getNbTicket(ticket)>1; // renvoie vrai si l'utilisateur est déjà connu pour appliquer la réduction
  		    fareCalculatorService.calculateFare(ticket, discount);

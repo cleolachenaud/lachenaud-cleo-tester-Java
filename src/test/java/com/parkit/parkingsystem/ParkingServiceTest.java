@@ -72,8 +72,9 @@ public class ParkingServiceTest {
 
         final Ticket ticketCaptured = ticketCaptor.getValue();
         final ParkingSpot parkingSpotCaptured = parkingSpotCaptor.getValue();
+        ParkingSpot parkingSpotReference = new ParkingSpot(1, ParkingType.CAR, false);
 
-        Assert.assertFalse("le parking doit être occupé", parkingSpotCaptured.isAvailable());
+        Assert.assertEquals("le parking doit être identique a l'attendu", parkingSpotReference, parkingSpotCaptured);
         Assert.assertNull("la date de sortie doit être null", ticketCaptured.getOutTime());
     }
 
@@ -87,7 +88,7 @@ public class ParkingServiceTest {
     	creationTicketMock();
 
     	Date dateAvantLancementMethode = new Date();
-        parkingService.processExitingVehicle();
+        parkingService.processExitingVehicle(new Date());
         Date dateApresLancementMethode = new Date();
 
         final Ticket ticketCaptured = ticketCaptor.getValue();
@@ -106,7 +107,7 @@ public class ParkingServiceTest {
      public void processExitingVehicleTestUnableUpdate () {
     	 when(ticketDAO.updateTicket(ticketCaptor.capture())).thenReturn(false);
     	 creationTicketMock();
-         parkingService.processExitingVehicle();
+         parkingService.processExitingVehicle(new Date());
      	 verify(parkingSpotDAO, never()).updateParking(any(ParkingSpot.class));
      }
 /**
