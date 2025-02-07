@@ -49,6 +49,8 @@ public class ParkingService {
                 if(ticketDAO.getNbTicket(ticket)>1) {
                 	logger.info("Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%");
 		        }
+                logger.info("Nous vous invitons à vous garer à l'emplacement numéro "+ parkingSpot.getId());
+
             }
         }catch(Exception e){
             logger.error("Unable to process incoming vehicle",e);
